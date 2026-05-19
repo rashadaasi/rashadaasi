@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Muhammad Rashad | Digital Expert</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #050505;
+  --bg2:      #0a0a0a;
+  --lime:     #b8ff35;
+  --coral:    #ff4d6d;
+  --ice:      #e0f2ff;
+  --violet:   #8b5cf6;
+  --dim:      rgba(224,242,255,0.45);
+  --border:   rgba(184,255,53,0.15);
+  --glow-l:   0 0 30px rgba(184,255,53,0.5), 0 0 80px rgba(184,255,53,0.2);
+  --glow-c:   0 0 30px rgba(255,77,109,0.5), 0 0 80px rgba(255,77,109,0.2);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--ice);font-family:'Inter',sans-serif;overflow-x:hidden;cursor:none;}
+
+/* CURSOR */
+#cur{width:8px;height:8px;background:var(--lime);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s,background .2s;box-shadow:var(--glow-l);}
+#cur-o{width:32px;height:32px;border:1px solid rgba(184,255,53,0.6);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .1s,top .1s,width .2s,height .2s,border-color .2s;}
+.cur-big #cur{width:18px;height:18px;background:var(--coral);}
+.cur-big #cur-o{width:56px;height:56px;border-color:rgba(255,77,109,0.6);}
+
+/* SCROLL BAR */
+#sprogress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--lime),var(--coral));z-index:9997;}
+
+/* CANVAS */
+#bgc{position:fixed;inset:0;z-index:0;pointer-events:none;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 60px;display:flex;align-items:center;justify-content:space-between;background:rgba(5,5,5,0.85);backdrop-filter:blur(24px);border-bottom:1px solid rgba(184,255,53,0.08);}
+.nlogo{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:4px;color:var(--lime);text-shadow:var(--glow-l);}
+.nlinks{list-style:none;display:flex;gap:40px;}
+.nlinks a{font-family:'JetBrains Mono',monospace;font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--dim);text-decoration:none;transition:color .3s;cursor:none;position:relative;}
+.nlinks a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--lime);box-shadow:var(--glow-l);transition:width .3s;}
+.nlinks a:hover{color:var(--lime);}
+.nlinks a:hover::after{width:100%;}
+
+section{position:relative;z-index:1;}
+
+/* ══ HERO ══ */
+#hero{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:120px 60px 80px;overflow:hidden;}
+.hero-inner{max-width:1100px;width:100%;}
+
+.h-eyebrow{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.72rem;
+  letter-spacing:5px;
+  text-transform:uppercase;
+  color:var(--lime);
+  margin-bottom:28px;
+  display:flex;align-items:center;gap:14px;
+  opacity:0;animation:riseUp .7s .2s forwards;
+}
+.h-eyebrow::before{content:'';width:30px;height:1px;background:var(--lime);box-shadow:var(--glow-l);}
+
+.h-name{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(4rem,11vw,10rem);
+  line-height:.95;
+  letter-spacing:4px;
+  margin-bottom:24px;
+  opacity:0;animation:riseUp .8s .4s forwards;
+}
+.h-name .w1{
+  display:block;
+  background:linear-gradient(110deg,#ffffff 0%,#ffffff 40%,#b8ff35 70%,#7dff00 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 40px rgba(184,255,53,0.35));
+}
+.h-name .w2{
+  display:block;
+  background:linear-gradient(110deg,#ff4d6d 0%,#ff8fa3 40%,#ffd6dd 80%,#ffffff 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 40px rgba(255,77,109,0.4));
+}
+
+.h-roles{
+  display:flex;gap:10px;flex-wrap:wrap;margin-bottom:36px;
+  opacity:0;animation:riseUp .7s .6s forwards;
+}
+.role-chip{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.68rem;
+  letter-spacing:2px;
+  padding:7px 18px;
+  border:1px solid rgba(184,255,53,0.3);
+  color:var(--lime);
+  text-transform:uppercase;
+  clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);
+  transition:background .3s,color .3s;
+}
+.role-chip:hover{background:var(--lime);color:#000;}
+.role-chip.red{border-color:rgba(255,77,109,0.3);color:var(--coral);}
+.role-chip.red:hover{background:var(--coral);color:#fff;}
+.role-chip.wh{border-color:rgba(224,242,255,0.2);color:rgba(224,242,255,0.6);}
+.role-chip.wh:hover{background:rgba(224,242,255,0.1);color:var(--ice);}
+
+.h-desc{
+  max-width:560px;
+  font-size:1.05rem;
+  line-height:1.85;
+  color:var(--dim);
+  margin-bottom:48px;
+  opacity:0;animation:riseUp .7s .8s forwards;
+}
+
+.h-btns{
+  display:flex;gap:16px;flex-wrap:wrap;
+  opacity:0;animation:riseUp .7s 1s forwards;
+}
+.btn-l{
+  padding:15px 40px;
+  background:var(--lime);
+  color:#000;
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.72rem;
+  font-weight:700;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  border:none;cursor:none;
+  clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+  transition:box-shadow .3s,transform .2s;
+}
+.btn-l:hover{box-shadow:var(--glow-l);transform:translateY(-2px);}
+.btn-r{
+  padding:15px 40px;
+  background:transparent;
+  color:var(--coral);
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.72rem;
+  font-weight:700;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  border:1px solid rgba(255,77,109,0.4);
+  cursor:none;
+  clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+  transition:background .3s,box-shadow .3s,transform .2s;
+}
+.btn-r:hover{background:rgba(255,77,109,0.1);box-shadow:var(--glow-c);transform:translateY(-2px);}
+
+.h-stats{
+  display:flex;gap:48px;margin-top:64px;padding-top:48px;
+  border-top:1px solid rgba(184,255,53,0.1);
+  opacity:0;animation:riseUp .7s 1.2s forwards;
+}
+.hstat-num{font-family:'Bebas Neue',sans-serif;font-size:3rem;letter-spacing:2px;color:var(--lime);line-height:1;text-shadow:var(--glow-l);}
+.hstat-lbl{font-size:0.75rem;color:var(--dim);letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
+
+/* ══ SECTION COMMON ══ */
+.sec{max-width:1200px;margin:0 auto;padding:110px 60px;}
+.slabel{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.68rem;
+  letter-spacing:5px;
+  color:var(--lime);
+  text-transform:uppercase;
+  margin-bottom:10px;
+  display:flex;align-items:center;gap:12px;
+}
+.slabel::before{content:'';width:24px;height:1px;background:var(--lime);}
+.stitle{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(2.2rem,5vw,4rem);
+  letter-spacing:3px;
+  line-height:1;
+  margin-bottom:60px;
+  color:var(--ice);
+}
+.stitle em{font-style:normal;color:var(--lime);}
+.stitle em.red{color:var(--coral);}
+
+/* REVEAL */
+.rv{opacity:0;transform:translateY(36px);transition:opacity .7s ease,transform .7s ease;}
+.rv.on{opacity:1;transform:none;}
+
+/* ══ ABOUT ══ */
+#about{background:transparent;}
+.about-wrap{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+.about-body p{font-size:1rem;line-height:1.9;color:var(--dim);margin-bottom:18px;}
+.acard-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:40px;}
+.acard{
+  padding:22px 20px;
+  border:1px solid var(--border);
+  background:rgba(184,255,53,0.03);
+  clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px));
+  transition:border-color .3s,transform .3s;
+}
+.acard:hover{border-color:rgba(184,255,53,0.5);transform:translateY(-4px);}
+.acard-n{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;color:var(--lime);letter-spacing:2px;text-shadow:var(--glow-l);}
+.acard-l{font-size:0.75rem;color:var(--dim);letter-spacing:2px;text-transform:uppercase;margin-top:2px;}
+.about-vis{display:flex;align-items:center;justify-content:center;position:relative;height:420px;}
+.vis-box{
+  width:280px;height:280px;
+  border:1px solid rgba(184,255,53,0.2);
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+  animation:rotBox 8s linear infinite;
+}
+.vis-box::before{
+  content:'';position:absolute;inset:-20px;
+  border:1px solid rgba(255,77,109,0.15);
+  animation:rotBox 12s linear infinite reverse;
+}
+.vis-box::after{
+  content:'';position:absolute;inset:20px;
+  border:1px solid rgba(184,255,53,0.1);
+  animation:rotBox 6s linear infinite;
+}
+@keyframes rotBox{to{transform:rotate(360deg);}}
+.vis-inner{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1rem;letter-spacing:6px;
+  color:var(--lime);text-align:center;line-height:2;
+  animation:rotBox 8s linear infinite reverse;
+}
+.vis-dot{
+  position:absolute;
+  width:10px;height:10px;border-radius:50%;
+}
+.vis-dot.a{background:var(--lime);top:-5px;left:50%;box-shadow:var(--glow-l);}
+.vis-dot.b{background:var(--coral);bottom:-5px;right:30%;box-shadow:var(--glow-c);}
+.vis-dot.c{background:#8b5cf6;left:-5px;top:60%;box-shadow:0 0 20px #8b5cf6;}
+
+/* ══ SERVICES ══ */
+#services{background:linear-gradient(180deg,transparent,rgba(184,255,53,0.015) 50%,transparent);}
+.srv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(184,255,53,0.08);}
+.srv{
+  padding:36px 30px;
+  background:var(--bg);
+  position:relative;overflow:hidden;cursor:none;
+  transition:background .3s;
+}
+.srv::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(184,255,53,0.07),transparent 55%);
+  opacity:0;transition:opacity .4s;
+}
+.srv:hover::before{opacity:1;}
+.srv:hover{background:rgba(184,255,53,0.03);}
+.srv.c2::before{background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(255,77,109,0.07),transparent 55%);}
+.srv.c2:hover{background:rgba(255,77,109,0.03);}
+.srv.c3::before{background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(139,92,246,0.07),transparent 55%);}
+.srv.c3:hover{background:rgba(139,92,246,0.03);}
+.srv-ico{font-size:2rem;margin-bottom:18px;display:block;transition:transform .3s;}
+.srv:hover .srv-ico{transform:scale(1.2) rotate(-8deg);}
+.srv-n{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.6rem;letter-spacing:3px;
+  color:rgba(184,255,53,0.4);margin-bottom:10px;
+}
+.srv.c2 .srv-n{color:rgba(255,77,109,0.4);}
+.srv.c3 .srv-n{color:rgba(139,92,246,0.4);}
+.srv-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1.3rem;letter-spacing:2px;
+  color:var(--ice);margin-bottom:12px;
+}
+.srv-desc{font-size:0.9rem;line-height:1.75;color:var(--dim);}
+.srv-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:18px;}
+.stag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.6rem;padding:3px 10px;
+  border:1px solid rgba(184,255,53,0.2);
+  color:rgba(184,255,53,0.6);letter-spacing:1px;
+}
+.srv.c2 .stag{border-color:rgba(255,77,109,0.2);color:rgba(255,77,109,0.6);}
+.srv.c3 .stag{border-color:rgba(139,92,246,0.2);color:rgba(139,92,246,0.6);}
+
+/* ══ TOOLS ══ */
+#tools{background:transparent;}
+.tools-wrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;}
+.tpill{
+  padding:16px 10px;text-align:center;
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;
+  color:var(--dim);border:1px solid rgba(224,242,255,0.08);
+  background:rgba(255,255,255,0.02);
+  transition:all .25s;cursor:none;position:relative;overflow:hidden;
+}
+.tpill::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,var(--lime),var(--coral));
+  opacity:0;transition:opacity .25s;
+}
+.tpill:hover{color:#000;border-color:transparent;}
+.tpill:hover::before{opacity:1;}
+.tpill span{position:relative;z-index:1;}
+
+/* ══ PROCESS ══ */
+#process{background:transparent;}
+.proc-list{display:flex;flex-direction:column;gap:2px;}
+.proc{
+  display:grid;grid-template-columns:80px 1fr;gap:40px;align-items:start;
+  padding:32px 0;border-bottom:1px solid rgba(224,242,255,0.06);
+  cursor:none;transition:padding-left .3s;
+}
+.proc:hover{padding-left:16px;}
+.proc-num{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:3.5rem;color:rgba(184,255,53,0.15);
+  letter-spacing:2px;line-height:1;
+  transition:color .3s;
+}
+.proc:hover .proc-num{color:rgba(184,255,53,0.5);}
+.proc-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1.5rem;letter-spacing:2px;
+  color:var(--ice);margin-bottom:8px;
+}
+.proc-desc{font-size:0.95rem;line-height:1.75;color:var(--dim);}
+
+/* ══ TESTIMONIALS ══ */
+#testimonials{background:transparent;}
+.testi-wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.tc{
+  padding:34px 28px;
+  border:1px solid rgba(224,242,255,0.07);
+  background:rgba(255,255,255,0.02);
+  transition:border-color .3s,transform .3s;
+  cursor:none;
+}
+.tc:hover{border-color:rgba(184,255,53,0.3);transform:translateY(-6px);}
+.tc-stars{color:var(--lime);font-size:0.85rem;margin-bottom:16px;letter-spacing:3px;}
+.tc-q{font-size:2.5rem;color:var(--lime);line-height:1;margin-bottom:12px;}
+.tc-txt{font-size:0.95rem;line-height:1.8;color:var(--dim);font-style:italic;margin-bottom:22px;}
+.tc-name{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:3px;color:var(--ice);}
+.tc-role{font-size:0.75rem;color:rgba(184,255,53,0.5);letter-spacing:2px;margin-top:3px;}
+
+/* ══ CONTACT ══ */
+#contact{background:transparent;}
+.contact-wrap{display:grid;grid-template-columns:1fr 1fr;gap:80px;}
+.cinfo{}
+.ci{
+  display:flex;gap:18px;align-items:flex-start;
+  padding:22px 20px;margin-bottom:14px;
+  border:1px solid rgba(224,242,255,0.06);
+  background:rgba(255,255,255,0.02);
+  transition:border-color .3s,transform .3s;cursor:none;
+}
+.ci:hover{border-color:rgba(184,255,53,0.3);transform:translateX(8px);}
+.ci-ico{font-size:1.2rem;flex-shrink:0;margin-top:2px;}
+.ci h4{font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:3px;color:var(--lime);text-transform:uppercase;margin-bottom:5px;}
+.ci p,.ci a{font-size:0.95rem;color:var(--dim);text-decoration:none;transition:color .2s;word-break:break-all;}
+.ci a:hover{color:var(--lime);}
+.cform{}
+.fg{margin-bottom:18px;}
+.fg label{display:block;font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:3px;color:var(--lime);text-transform:uppercase;margin-bottom:7px;}
+.fg input,.fg textarea,.fg select{
+  width:100%;background:rgba(255,255,255,0.03);
+  border:1px solid rgba(224,242,255,0.1);
+  color:var(--ice);font-family:'Inter',sans-serif;font-size:0.95rem;
+  padding:13px 16px;outline:none;
+  transition:border-color .3s,box-shadow .3s;
+}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--lime);box-shadow:0 0 0 3px rgba(184,255,53,0.08);}
+.fg textarea{height:120px;resize:none;}
+.fg select option{background:#0a0a0a;}
+.fsub{
+  width:100%;padding:15px;background:var(--lime);color:#000;
+  font-family:'JetBrains Mono',monospace;font-size:0.72rem;
+  font-weight:700;letter-spacing:3px;text-transform:uppercase;
+  border:none;cursor:none;
+  clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+  transition:box-shadow .3s,transform .2s;
+}
+.fsub:hover{box-shadow:var(--glow-l);transform:translateY(-2px);}
+
+/* FOOTER */
+footer{
+  border-top:1px solid rgba(184,255,53,0.08);
+  padding:36px 60px;display:flex;align-items:center;
+  justify-content:space-between;position:relative;z-index:1;
+}
+.f-logo{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:4px;color:var(--lime);}
+.f-copy{font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:2px;color:rgba(224,242,255,0.25);}
+
+/* FLOAT PARTICLES */
+.flt{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.flt span{
+  position:absolute;
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.65rem;letter-spacing:1px;
+  opacity:0.1;
+  animation:floatUp linear infinite;
+}
+@keyframes floatUp{
+  0%{transform:translateY(110vh);opacity:0;}
+  10%{opacity:.12;}
+  90%{opacity:.12;}
+  100%{transform:translateY(-20vh);opacity:0;}
+}
+@keyframes riseUp{
+  from{opacity:0;transform:translateY(28px);}
+  to{opacity:1;transform:none;}
+}
+
+@media(max-width:900px){
+  nav{padding:14px 20px;}
+  .nlinks{gap:20px;}
+  .sec{padding:70px 24px;}
+  .about-wrap,.contact-wrap{grid-template-columns:1fr;gap:40px;}
+  .about-vis{height:240px;}
+  .srv-grid{grid-template-columns:1fr;}
+  .testi-wrap{grid-template-columns:1fr;}
+  .h-stats{gap:28px;}
+  .proc{grid-template-columns:50px 1fr;gap:20px;}
+  footer{flex-direction:column;gap:12px;text-align:center;padding:24px;}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur-o"></div>
+<div id="sprogress"></div>
+<canvas id="bgc"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="nlogo">MR Studio</div>
+  <ul class="nlinks">
+    <li><a onclick="go('about')">About</a></li>
+    <li><a onclick="go('services')">Services</a></li>
+    <li><a onclick="go('tools')">Tools</a></li>
+    <li><a onclick="go('process')">Process</a></li>
+    <li><a onclick="go('testimonials')">Reviews</a></li>
+    <li><a onclick="go('contact')">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section id="hero">
+  <div class="flt" id="flt"></div>
+  <div class="hero-inner">
+    <div class="h-eyebrow">Digital Expert &nbsp;·&nbsp; Est. 2018 &nbsp;·&nbsp; Kasur, Pakistan</div>
+    <h1 class="h-name">
+      <span class="w1">MUHAMMAD</span>
+      <span class="w2">RASHAD</span>
+    </h1>
+    <div class="h-roles">
+      <span class="role-chip">Digital Marketer</span>
+      <span class="role-chip red">WordPress Dev</span>
+      <span class="role-chip">Shopify Expert</span>
+      <span class="role-chip red">AI Specialist</span>
+      <span class="role-chip wh">App Builder</span>
+      <span class="role-chip wh">Ecommerce</span>
+    </div>
+    <p class="h-desc">Building digital empires — from high-converting stores to AI-powered automation and marketing campaigns that deliver measurable growth.</p>
+    <div class="h-btns">
+      <button class="btn-l" onclick="go('services')">Explore Services</button>
+      <button class="btn-r" onclick="go('contact')">Hire Me Now</button>
+    </div>
+    <div class="h-stats">
+      <div><div class="hstat-num">250+</div><div class="hstat-lbl">Projects Done</div></div>
+      <div><div class="hstat-num">100+</div><div class="hstat-lbl">Happy Clients</div></div>
+      <div><div class="hstat-num">6+</div><div class="hstat-lbl">Years Active</div></div>
+      <div><div class="hstat-num">15+</div><div class="hstat-lbl">Tools Mastered</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ABOUT ══ -->
+<section id="about">
+  <div class="sec">
+    <div class="slabel rv">About Me</div>
+    <h2 class="stitle rv">Who Is <em>Rashad?</em></h2>
+    <div class="about-wrap">
+      <div class="about-body rv">
+        <p>I'm Muhammad Rashad — a multi-disciplinary digital expert based in Kasur, Pakistan, with years of hands-on experience turning ideas into profitable online businesses.</p>
+        <p>I work at the intersection of design, technology, and strategy. Whether you need a blazing-fast WordPress site, a revenue-optimized Shopify store, a Wix landing page, or an AI-powered workflow — I deliver.</p>
+        <p>From product listing and store management to full-scale digital marketing campaigns, I handle every layer of your digital presence so you can focus on growing your business.</p>
+        <div class="acard-grid">
+          <div class="acard rv"><div class="acard-n">250+</div><div class="acard-l">Projects Done</div></div>
+          <div class="acard rv"><div class="acard-n">100+</div><div class="acard-l">Happy Clients</div></div>
+          <div class="acard rv"><div class="acard-n">6+</div><div class="acard-l">Years Active</div></div>
+          <div class="acard rv"><div class="acard-n">15+</div><div class="acard-l">Tools Mastered</div></div>
+        </div>
+      </div>
+      <div class="about-vis rv">
+        <div class="vis-box">
+          <div class="vis-dot a"></div>
+          <div class="vis-dot b"></div>
+          <div class="vis-dot c"></div>
+          <div class="vis-inner">DIGITAL<br>EXPERT<br>MR</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SERVICES ══ -->
+<section id="services">
+  <div class="sec">
+    <div class="slabel rv">What I Do</div>
+    <h2 class="stitle rv">Core <em>Services</em></h2>
+    <div class="srv-grid rv">
+      <div class="srv" onmousemove="mm(event,this)">
+        <span class="srv-ico">📈</span>
+        <div class="srv-n">// 01</div>
+        <h3 class="srv-title">Digital Marketing</h3>
+        <p class="srv-desc">Data-driven campaigns across SEO, social media, email, and paid ads that convert and scale.</p>
+        <div class="srv-tags"><span class="stag">SEO</span><span class="stag">PPC</span><span class="stag">Social</span><span class="stag">Email</span></div>
+      </div>
+      <div class="srv c2" onmousemove="mm(event,this)">
+        <span class="srv-ico">🌐</span>
+        <div class="srv-n">// 02</div>
+        <h3 class="srv-title">WordPress Dev</h3>
+        <p class="srv-desc">Custom themes, WooCommerce stores, membership sites — fast, responsive, SEO-optimized.</p>
+        <div class="srv-tags"><span class="stag">WooCommerce</span><span class="stag">Elementor</span><span class="stag">Plugins</span></div>
+      </div>
+      <div class="srv c3" onmousemove="mm(event,this)">
+        <span class="srv-ico">🛒</span>
+        <div class="srv-n">// 03</div>
+        <h3 class="srv-title">Shopify Development</h3>
+        <p class="srv-desc">High-converting Shopify stores — custom themes, app integrations, and payment optimization.</p>
+        <div class="srv-tags"><span class="stag">Liquid</span><span class="stag">Apps</span><span class="stag">Dropshipping</span></div>
+      </div>
+      <div class="srv" onmousemove="mm(event,this)">
+        <span class="srv-ico">✨</span>
+        <div class="srv-n">// 04</div>
+        <h3 class="srv-title">Wix Development</h3>
+        <p class="srv-desc">Beautiful Wix websites for businesses, portfolios, and service providers. Quick, premium results.</p>
+        <div class="srv-tags"><span class="stag">Wix ADI</span><span class="stag">Velo</span><span class="stag">Stores</span></div>
+      </div>
+      <div class="srv c2" onmousemove="mm(event,this)">
+        <span class="srv-ico">🤖</span>
+        <div class="srv-n">// 05</div>
+        <h3 class="srv-title">AI Tools & Automation</h3>
+        <p class="srv-desc">ChatGPT-powered workflows and AI content pipelines that save hours and boost productivity.</p>
+        <div class="srv-tags"><span class="stag">ChatGPT</span><span class="stag">Midjourney</span><span class="stag">Zapier</span></div>
+      </div>
+      <div class="srv c3" onmousemove="mm(event,this)">
+        <span class="srv-ico">📦</span>
+        <div class="srv-n">// 06</div>
+        <h3 class="srv-title">App Building</h3>
+        <p class="srv-desc">No-code and low-code apps using modern platforms — launch without a massive dev team.</p>
+        <div class="srv-tags"><span class="stag">Bubble</span><span class="stag">Glide</span><span class="stag">FlutterFlow</span></div>
+      </div>
+      <div class="srv" onmousemove="mm(event,this)">
+        <span class="srv-ico">🗂️</span>
+        <div class="srv-n">// 07</div>
+        <h3 class="srv-title">Product Listing</h3>
+        <p class="srv-desc">SEO-optimized listings across Amazon, eBay, Etsy, Shopify. Bulk uploads, images, copywriting.</p>
+        <div class="srv-tags"><span class="stag">Amazon</span><span class="stag">eBay</span><span class="stag">Etsy</span><span class="stag">Daraz</span></div>
+      </div>
+      <div class="srv c2" onmousemove="mm(event,this)">
+        <span class="srv-ico">🏪</span>
+        <div class="srv-n">// 08</div>
+        <h3 class="srv-title">Store Management</h3>
+        <p class="srv-desc">Full-service ecommerce management — inventory, orders, analytics, and continuous optimization.</p>
+        <div class="srv-tags"><span class="stag">Inventory</span><span class="stag">Orders</span><span class="stag">Analytics</span></div>
+      </div>
+      <div class="srv c3" onmousemove="mm(event,this)">
+        <span class="srv-ico">🎯</span>
+        <div class="srv-n">// 09</div>
+        <h3 class="srv-title">Brand Strategy</h3>
+        <p class="srv-desc">Complete brand identity — logo, messaging, and positioning to stand out in a crowded market.</p>
+        <div class="srv-tags"><span class="stag">Logo</span><span class="stag">Identity</span><span class="stag">Positioning</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ TOOLS ══ -->
+<section id="tools">
+  <div class="sec">
+    <div class="slabel rv">My Toolkit</div>
+    <h2 class="stitle rv">Tools &amp; <em>Platforms</em></h2>
+    <div class="tools-wrap rv">
+      <div class="tpill"><span>WordPress</span></div>
+      <div class="tpill"><span>Shopify</span></div>
+      <div class="tpill"><span>Wix</span></div>
+      <div class="tpill"><span>ChatGPT</span></div>
+      <div class="tpill"><span>Midjourney</span></div>
+      <div class="tpill"><span>Elementor</span></div>
+      <div class="tpill"><span>WooCommerce</span></div>
+      <div class="tpill"><span>Google Ads</span></div>
+      <div class="tpill"><span>Meta Ads</span></div>
+      <div class="tpill"><span>Ahrefs</span></div>
+      <div class="tpill"><span>SEMrush</span></div>
+      <div class="tpill"><span>Canva</span></div>
+      <div class="tpill"><span>Figma</span></div>
+      <div class="tpill"><span>Zapier</span></div>
+      <div class="tpill"><span>Bubble</span></div>
+      <div class="tpill"><span>Klaviyo</span></div>
+      <div class="tpill"><span>MailChimp</span></div>
+      <div class="tpill"><span>Amazon</span></div>
+      <div class="tpill"><span>eBay</span></div>
+      <div class="tpill"><span>Daraz</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PROCESS ══ -->
+<section id="process">
+  <div class="sec">
+    <div class="slabel rv">How I Work</div>
+    <h2 class="stitle rv">My <em class="red">Process</em></h2>
+    <div class="proc-list">
+      <div class="proc rv">
+        <div class="proc-num">01</div>
+        <div><h3 class="proc-title">Discovery & Strategy</h3><p class="proc-desc">Deep-dive into your business, goals, target audience, and competitors. Clear digital roadmap before a single pixel is designed.</p></div>
+      </div>
+      <div class="proc rv">
+        <div class="proc-num">02</div>
+        <div><h3 class="proc-title">Design & Architecture</h3><p class="proc-desc">From wireframes to full UI. UX-first thinking ensures the product looks great and converts. Every element is intentional.</p></div>
+      </div>
+      <div class="proc rv">
+        <div class="proc-num">03</div>
+        <div><h3 class="proc-title">Development & Integration</h3><p class="proc-desc">Clean builds on WordPress, Shopify, or Wix with payment gateways, CRM, marketing tools, analytics, and AI workflows.</p></div>
+      </div>
+      <div class="proc rv">
+        <div class="proc-num">04</div>
+        <div><h3 class="proc-title">Testing & Optimization</h3><p class="proc-desc">Cross-device testing, speed optimization, SEO setup, and CRO analysis before launch. Nothing goes live until it's perfect.</p></div>
+      </div>
+      <div class="proc rv">
+        <div class="proc-num">05</div>
+        <div><h3 class="proc-title">Launch & Scale</h3><p class="proc-desc">Post-launch monitoring, marketing campaigns, and continuous optimization to grow your business month over month.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ TESTIMONIALS ══ -->
+<section id="testimonials">
+  <div class="sec">
+    <div class="slabel rv">Client Reviews</div>
+    <h2 class="stitle rv">What Clients <em>Say</em></h2>
+    <div class="testi-wrap">
+      <div class="tc rv">
+        <div class="tc-stars">★★★★★</div>
+        <div class="tc-q">"</div>
+        <p class="tc-txt">Rashad transformed our Shopify store completely. Sales increased by 180% within two months of launch. Exceptional work and communication throughout.</p>
+        <div class="tc-name">Ahmed K.</div>
+        <div class="tc-role">Ecommerce Owner, Dubai</div>
+      </div>
+      <div class="tc rv">
+        <div class="tc-stars">★★★★★</div>
+        <div class="tc-q">"</div>
+        <p class="tc-txt">Best WordPress developer I've worked with. Built our entire membership platform from scratch and integrated all our tools. Highly recommended!</p>
+        <div class="tc-name">Sara M.</div>
+        <div class="tc-role">Course Creator, UK</div>
+      </div>
+      <div class="tc rv">
+        <div class="tc-stars">★★★★★</div>
+        <div class="tc-q">"</div>
+        <p class="tc-txt">Rashad's AI automation system saved us 20+ hours per week. The content workflow he built is seamlessly integrated with all our existing tools.</p>
+        <div class="tc-name">Bilal A.</div>
+        <div class="tc-role">Agency Owner, Karachi</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CONTACT ══ -->
+<section id="contact">
+  <div class="sec">
+    <div class="slabel rv">Get In Touch</div>
+    <h2 class="stitle rv">Let's <em>Build</em> Together</h2>
+    <div class="contact-wrap">
+      <div class="cinfo rv">
+        <div class="ci"><div class="ci-ico">📞</div><div><h4>Phone / WhatsApp</h4><a href="tel:+923006548890">+92 300 654 8890</a></div></div>
+        <div class="ci"><div class="ci-ico">✉️</div><div><h4>Email</h4><a href="mailto:rashadaasi890@gmail.com">rashadaasi890@gmail.com</a></div></div>
+        <div class="ci"><div class="ci-ico">📍</div><div><h4>Address</h4><p>House No 16, New Colony Roddy<br>Usmanwala, Kasur — 55010<br>Punjab, Pakistan</p></div></div>
+        <div class="ci"><div class="ci-ico">⏱️</div><div><h4>Response Time</h4><p>Within 2–4 hours on business days</p></div></div>
+      </div>
+      <div class="cform rv">
+        <div class="fg"><label>Your Name</label><input type="text" placeholder="e.g. Ahmed Khan"></div>
+        <div class="fg"><label>Email Address</label><input type="email" placeholder="ahmed@example.com"></div>
+        <div class="fg"><label>Service Required</label>
+          <select>
+            <option value="">— Select a Service —</option>
+            <option>Digital Marketing</option>
+            <option>WordPress Development</option>
+            <option>Shopify Development</option>
+            <option>Wix Development</option>
+            <option>AI Tools & Automation</option>
+            <option>App Building</option>
+            <option>Ecommerce Product Listing</option>
+            <option>Store Management</option>
+            <option>Brand Strategy</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="fg"><label>Project Brief</label><textarea placeholder="Tell me about your project, goals, and timeline..."></textarea></div>
+        <button class="fsub" onclick="sendMsg(this)">Send Message →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-logo">MR Studio</div>
+  <div class="f-copy">© 2025 Muhammad Rashad · Kasur, Punjab, Pakistan · All Rights Reserved</div>
+</footer>
+
+<script>
+// CURSOR
+const cur = document.getElementById('cur');
+const curo = document.getElementById('cur-o');
+let mx=0,my=0,ox=0,oy=0;
+document.addEventListener('mousemove', e=>{
+  mx=e.clientX; my=e.clientY;
+  cur.style.left=mx+'px'; cur.style.top=my+'px';
+});
+(function loop(){
+  ox+=(mx-ox)*.13; oy+=(my-oy)*.13;
+  curo.style.left=ox+'px'; curo.style.top=oy+'px';
+  requestAnimationFrame(loop);
+})();
+document.querySelectorAll('a,button,.srv,.tpill,.tc,.ci,.proc,.acard').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('cur-big'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('cur-big'));
+});
+
+// SCROLL PROGRESS
+const sp=document.getElementById('sprogress');
+window.addEventListener('scroll',()=>{
+  sp.style.width=(scrollY/(document.body.scrollHeight-innerHeight)*100)+'%';
+});
+
+// SMOOTH SCROLL
+function go(id){ document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'}); }
+
+// SERVICE CARD MOUSE
+function mm(e,el){
+  const r=el.getBoundingClientRect();
+  el.style.setProperty('--mx',((e.clientX-r.left)/r.width*100).toFixed(1)+'%');
+  el.style.setProperty('--my',((e.clientY-r.top)/r.height*100).toFixed(1)+'%');
+}
+
+// REVEAL ON SCROLL
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach((en,i)=>{
+    if(en.isIntersecting){ setTimeout(()=>en.target.classList.add('on'),i*70); obs.unobserve(en.target); }
+  });
+},{threshold:.1});
+document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
+
+// CANVAS BACKGROUND
+const cvs=document.getElementById('bgc');
+const ctx=cvs.getContext('2d');
+let W,H,pts=[];
+function rsz(){ W=cvs.width=innerWidth; H=cvs.height=innerHeight; }
+rsz(); window.addEventListener('resize',rsz);
+for(let i=0;i<80;i++) pts.push({
+  x:Math.random()*3000,y:Math.random()*3000,
+  vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,
+  r:Math.random()*1.2+.3,
+  c:Math.random()>.55?'184,255,53':'255,77,109',
+  a:Math.random()*.4+.1
+});
+let pmx=W/2,pmy=H/2;
+document.addEventListener('mousemove',e=>{pmx=e.clientX;pmy=e.clientY;});
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  // subtle grid
+  ctx.strokeStyle='rgba(184,255,53,0.025)';
+  ctx.lineWidth=1;
+  for(let x=0;x<W;x+=90){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=90){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  pts.forEach(p=>{
+    const dx=pmx-p.x,dy=pmy-p.y,d=Math.sqrt(dx*dx+dy*dy);
+    if(d<180){p.vx+=dx/d*.008;p.vy+=dy/d*.008;}
+    p.vx*=.99;p.vy*=.99;
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0)p.x=W;if(p.x>W)p.x=0;
+    if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(${p.c},${p.a})`;ctx.fill();
+  });
+  for(let i=0;i<pts.length;i++){
+    for(let j=i+1;j<pts.length;j++){
+      const dx=pts[j].x-pts[i].x,dy=pts[j].y-pts[i].y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<110){
+        ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);
+        ctx.strokeStyle=`rgba(${pts[i].c},${(1-d/110)*.12})`;ctx.lineWidth=.5;ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+
+// FLOATING SYMBOLS
+const flt=document.getElementById('flt');
+const syms=['WP','</>','SEO','AI','ROI','PPC','CRO','CTR','SMM','KPI','API','UX','SEM','CMS','SaaS'];
+for(let i=0;i<20;i++){
+  const s=document.createElement('span');
+  s.textContent=syms[i%syms.length];
+  s.style.cssText=`left:${Math.random()*95}%;animation-duration:${14+Math.random()*18}s;animation-delay:${Math.random()*16}s;color:${Math.random()>.5?'rgba(184,255,53,.8)':'rgba(255,77,109,.8)'};`;
+  flt.appendChild(s);
+}
+
+// FORM
+function sendMsg(btn){
+  btn.textContent='Sending...'; btn.disabled=true;
+  setTimeout(()=>{
+    btn.textContent='✓ Message Sent!';
+    btn.style.background='#4ade80';
+    setTimeout(()=>{ btn.textContent='Send Message →'; btn.disabled=false; btn.style.background=''; },3000);
+  },1400);
+}
+</script>
+</body>
+</html>
